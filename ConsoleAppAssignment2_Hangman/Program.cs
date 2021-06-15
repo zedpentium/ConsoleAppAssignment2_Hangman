@@ -62,6 +62,7 @@ namespace ConsoleAppAssignment2_Hangman
                 }
             }*/
 
+
             string[] listOfGuessWords = new string[5] { "money", "car", "cat", "dog", "banana" };
 
             Random rndWordPick = new Random();
