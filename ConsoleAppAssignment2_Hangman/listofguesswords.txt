@@ -1,0 +1,5 @@
+money
+car
+cat
+dog
+banana
