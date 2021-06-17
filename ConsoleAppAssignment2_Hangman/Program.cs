@@ -1,6 +1,7 @@
 ﻿using System;
 //using System.Linq;
 using System.IO;
+using System.Text;
 
 namespace ConsoleAppAssignment2_Hangman
 {
@@ -25,13 +26,12 @@ namespace ConsoleAppAssignment2_Hangman
 
                 lines = System.IO.File.ReadAllLines(Directory.GetCurrentDirectory() + "\\listofguesswords.txt");
 
-                //Console.WriteLine("\nLäsning av fil lyckad!");
 
             }
             catch (IOException e)
 
             {
-                Console.WriteLine($"An error of reading the file 'listofguesswords.txt'.\nError is:  {e.Message}");
+                Console.WriteLine($"An error of reading the file 'listofguesswords.txt'. Error is:\n{e.Message}");
                 //Console.WriteLine(e.Message);
                 Console.ReadKey();
             }
@@ -44,68 +44,82 @@ namespace ConsoleAppAssignment2_Hangman
 
             //string[] listOfGuessWords = new string[5] { "money", "car", "cat", "dog", "banana" };
 
+            // picking a random word from listOfGuessWords
             Random rndWordPick = new Random();
             int idx = rndWordPick.Next(0, listOfGuessWords.Length);
             string wordToGuess = listOfGuessWords[idx];
 
-            // Declare Variables & arrays
-            string userInput;
-            int nrGuessesLeft = 10;
-            int nrOfguess = 0;
-            string[] whatUserGuessed = new string[15];
+            // Declare variables
+            int nrGuessesLeft = 10, nrOfguess = 0;
 
-            bool userGuessedWrong = true;
-
-            string guessedWordsString = "-> ";
-
+            string userInput = null;
+            string guessedWordsString = null;
+            string guessedCorrectLetter = null;
             string alertMessage = "";
 
+            bool rightInput = true;
+            bool userGuessedWrong = true;
+
+            // Declare arrays
+            string[] whatUserGuessed = new string[15];
             char[] displayWordToGuess = new char[wordToGuess.Length];
-
             char[] charArray = wordToGuess.ToCharArray();
+            char[] correctLetters = new char[wordToGuess.Length];
+            //correctLetters[0] = '.' ;
+            StringBuilder incorrectLetters = new StringBuilder();
 
+            //--------------------------------------------------
+
+
+            // Start of guesses loop
             for (int nrWord = 0; nrWord < wordToGuess.Length; nrWord++)
             {
                 displayWordToGuess[nrWord] = '_';
             }
 
-            bool rightInput = true;
-
             for (nrOfguess = 10; nrOfguess > 0; nrOfguess--)
             {
-
-
+                errorinputretry:
                 do
                 {
-
                     string wordReveale = new string(displayWordToGuess);
                     DisplayUpdate(nrOfguess, wordReveale, guessedWordsString);
 
+                //GuessesValidator();
+
+
+                // Below are a longer Try-loop ------------------------------------
 
                     try
                     {
 
-                    errorinputretry:
+                    
 
                         userInput = Console.ReadLine();
                         bool checkIFOnlyLetters = IsAlphabets(userInput);
 
-
                         rightInput = false;
 
-                        if (checkIFOnlyLetters == false)
+                        if (userInput.Length < 1) // input value check if-loops
                         {
+                            Console.Clear();
+                            Console.WriteLine("--- Hangman Console Game ---\n   --- Eric R Edition ---\n\n");
 
-                            alertMessage = "Your did not type in letter(s), please only type in letter(s): ";
+                            alertMessage = "You must type in something, can not be blank.\n";
                             AlertMessageRed(alertMessage);
+                            //Console.WriteLine("\nYou must type in something, can not be blank.");
                             goto errorinputretry;
                         }
 
-                        else if (userInput.Length < 1)
+
+                        else if (checkIFOnlyLetters == false)
                         {
-                            alertMessage = "\nYou must type in something, can not be blank.";
+                            Console.Clear();
+                            Console.WriteLine("--- Hangman Console Game ---\n   --- Eric R Edition ---\n\n"); 
+                            
+                            alertMessage = "Your did not type in letter(s), please only type in letter(s): \n";
                             AlertMessageRed(alertMessage);
-                            //Console.WriteLine("\nYou must type in something, can not be blank.");
+                            //Console.WriteLine("Your did not type in letter(s), please only type in letter(s): ");
                             goto errorinputretry;
                         }
 
@@ -114,12 +128,16 @@ namespace ConsoleAppAssignment2_Hangman
                             Console.Clear();
                             Console.WriteLine("--- Hangman Console Game ---\n   --- Eric R Edition ---\n\n");
 
-                            if (guessedWordsString.Contains(userInput))
+                            bool allreadyGuessedBool = false;
+                            allreadyGuessedBool = AllreadyGuesses(userInput, displayWordToGuess, incorrectLetters);
+
+
+                            if (allreadyGuessedBool == true)
                             {
-                                alertMessage = $"\nYou have allready guessed letter: {userInput}.\nTry again (this guess does not count).";
+                                alertMessage = $"You have allready guessed letter: {userInput}.\nTry again (this guess does not count).";
                                 AlertMessageGreen(alertMessage);
                                 //Console.WriteLine($"\nYou have allready guessed letter: {userInput}.\nTry again (this guess does not count).");
-                                goto errorinputretry;
+                               goto errorinputretry;
                             }
                             //Console.WriteLine($"\nYou guessed letter: {userInput}");
 
@@ -144,17 +162,39 @@ namespace ConsoleAppAssignment2_Hangman
                                 alertMessage = $"Sorry! {userInput} does not exist in this word.\n";
                                 AlertMessageGreen(alertMessage);
                                 //Console.WriteLine($"Sorry! {userInput} does not exist in this word.\n");
-                                guessedWordsString = guessedWordsString + userInput + " ,";
+                                //guessedWordsString = guessedWordsString + userInput + " ,";
+                                incorrectLetters.Append(userInput + ", ");
                             }
                             else if (userGuessedWrong == false)
                             {
                                 alertMessage = $"Great! {userInput} IS in this word.\n";
                                 AlertMessageGreen(alertMessage);
                                 //Console.WriteLine($"Great! {userInput} IS in this word.\n");
-                                guessedWordsString = guessedWordsString + userInput + " ,";
+                                //guessedWordsString = guessedWordsString + userInput + " ,";
+                                correctLetters = userInput.ToCharArray();
+                                //guessedCorrectLetter = correctLetters.ToString();
                             }
 
                             wordReveale = new string(displayWordToGuess);
+
+                            //foreach (char item in correctLetters)
+                            //{
+                            //    guessedWordsString = correctLetters.ToString();
+                            //}
+
+                            //string sJoin = string.Join(", ", correctLetters);
+                            string strCorrectLetters = new string(correctLetters);
+                            guessedWordsString = incorrectLetters.ToString() + strCorrectLetters;
+
+                            //Console.WriteLine("What does guessedWordsString contain: " + guessedWordsString);
+
+                            //Console.WriteLine("What does INcorrect contain: " + incorrectLetters.ToString());
+
+                            ////string charToString = new string(correctLetters);
+
+                            //Console.WriteLine("What does displayWordToGuess contain: " + sJoin);
+
+                            //Console.ReadKey();
 
                             if (wordReveale == wordToGuess)
                             {
@@ -171,7 +211,8 @@ namespace ConsoleAppAssignment2_Hangman
 
 
                             //Console.WriteLine($"\nYou guessed the word: {userInput}");
-
+                            Console.Clear();
+                            Console.WriteLine("--- Hangman Console Game ---\n   --- Eric R Edition ---\n\n");
 
                             if (userInput == wordToGuess)
                             {
@@ -180,18 +221,25 @@ namespace ConsoleAppAssignment2_Hangman
                             }
                             else
                             {
-                                alertMessage = $"Sorry! {userInput} is the wrong word!";
+                                alertMessage = $"Sorry! {userInput} is the wrong word!\n";
                                 AlertMessageGreen(alertMessage);
                                 //Console.WriteLine($"Sorry! {userInput} is the wrong word!");
+                                //incorrectLetters.Append(userInput + ", ");
                             }
 
-                            guessedWordsString = guessedWordsString + userInput + " ,";
+                            // guessedWordsString = guessedWordsString + userInput + " ,";
+                            //string sJoin = string.Join(", ", correctLetters);
+                            //guessedWordsString = incorrectLetters.ToString() + sJoin;
+
                             nrGuessesLeft--;
-                        }
+                        } // End of input value check if-loop
 
-                        //Console.Clear();
 
-                    } // End Try
+
+
+                    } // End try
+
+                    // catch of above try
                     catch (FormatException)
                     {
                         alertMessage = "Wrong format of input.";
@@ -202,20 +250,22 @@ namespace ConsoleAppAssignment2_Hangman
                     {
                         //Console.WriteLine("you must enter something:");
                     }
+                    // End of whole Try-loop
 
 
 
-
-
-                } while (rightInput); // End of do loop
+                } while (rightInput); // End of do-while loop
 
 
 
             } // End for-loop
 
+            // ----------------------------
+
+
             alertMessage = $"\n\n\n\nYou lost. Sorry.";
             AlertMessageYellow(alertMessage);
-        //onsole.WriteLine($"\n\n\n\nYou lost. Sorry.");
+            //Console.WriteLine($"\n\n\n\nYou lost. Sorry.");
 
         correctanswerend:
 
@@ -296,11 +346,33 @@ namespace ConsoleAppAssignment2_Hangman
         {
             Console.WriteLine($"The word to guess: {wordReveale}\n");
             Console.WriteLine($"You have {nrGuess} guesses left.\n");
-            Console.WriteLine($"You have allready guessed{guessedWordsString}\n");
+            Console.WriteLine($"This is what uou have allready guessed: {guessedWordsString}\n");
             Console.Write("Guess a letter or the word (write one letter, or whole word: ");
         }
 
 
+        static bool AllreadyGuesses(string userInput, char[] displayWordToGuess, StringBuilder incorrectLetters)
+        {
+            string allGCorL = new string(displayWordToGuess);
+            string allGIncL = incorrectLetters.ToString();
+            bool allreadyGuessedBool;
+
+            if (allGCorL.Contains(userInput))
+            {
+                allreadyGuessedBool = true;
+            }
+            else if (allGIncL.Contains(userInput))
+            {
+                allreadyGuessedBool = true;
+            }
+            else
+            {
+                allreadyGuessedBool = false;
+            }
+
+            return allreadyGuessedBool;
+
+        }
 
     } // End program
 }
