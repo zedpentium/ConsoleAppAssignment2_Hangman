@@ -29,7 +29,6 @@ namespace ConsoleAppAssignment2_Hangman
 
                     lines = System.IO.File.ReadAllLines(Directory.GetCurrentDirectory() + "\\listofguesswords.txt");
 
-
                 }
                 catch (IOException e)
 
