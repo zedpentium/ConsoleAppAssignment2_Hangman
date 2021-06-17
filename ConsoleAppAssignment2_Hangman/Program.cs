@@ -4,18 +4,16 @@ using System.Text;
 
 namespace ConsoleAppAssignment2_Hangman
 {
-    class Program
+    public class Program
     {
-        //static string alertText;
+        public static string alertText;
 
         public static void Main(string[] args)
         {
-            string alertText;
             bool restartGame;
 
             string[] lines = null;
             string[] listOfGuessWords = null;
-
 
             //string[] listOfGuessWords = new string[5] { "money", "car", "cat", "dog", "banana" };  old code before readin from file
 
@@ -222,7 +220,7 @@ namespace ConsoleAppAssignment2_Hangman
                 }
                 else
                 {
-                    string alertText = "You did not type y or n!";
+                    alertText = "You did not type y or n!";
                     AlertMessage(alertText, ConsoleColor.DarkRed);
                     yesOrNo = false;
                     return true;
@@ -247,7 +245,7 @@ namespace ConsoleAppAssignment2_Hangman
             GameTitleClear();
             //Console.WriteLine($"!!!! Congratulations! {wordToGuess} is the correct word! You won! !!!!\n");
             //Console.WriteLine($"You had {nrGuessesLeft} guesses left.\n\nWell Done!\n\n");
-            string alertText = $"!!!! Congratulations! { wordToGuess} is the correct word! You won!!!!!\nYou had {nrGuessesLeft} guesses left.\n\nWell Done!\n\n";
+            alertText = $"!!!! Congratulations! { wordToGuess} is the correct word! You won!!!!!\nYou had {nrGuessesLeft} guesses left.\n\nWell Done!\n\n";
             AlertMessage(alertText, ConsoleColor.Yellow);
             Console.ResetColor();
 
