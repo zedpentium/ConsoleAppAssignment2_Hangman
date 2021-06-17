@@ -101,8 +101,7 @@ namespace ConsoleAppAssignment2_Hangman
                     {
                         GameTitleClear();
 
-                        bool allreadyGuessedBool = false;
-                        allreadyGuessedBool = AllreadyGuesses(userInput, displayWordToGuess, incorrectLetters);
+                        bool allreadyGuessedBool = AllreadyGuesses(userInput, displayWordToGuess, incorrectLetters);
 
 
                         if (allreadyGuessedBool == true)
