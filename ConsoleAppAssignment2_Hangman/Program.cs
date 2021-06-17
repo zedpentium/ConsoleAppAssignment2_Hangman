@@ -6,44 +6,45 @@ namespace ConsoleAppAssignment2_Hangman
 {
     class Program
     {
-        static string alertMessage;
+        //static string alertText;
 
         public static void Main(string[] args)
         {
-            //startgameagain:
+            string alertText;
             bool restartGame;
+
+            string[] lines = null;
+            string[] listOfGuessWords = null;
+
+
+            //string[] listOfGuessWords = new string[5] { "money", "car", "cat", "dog", "banana" };  old code before readin from file
+
+            // --- Start Read in words from file
+            try
+            {
+                //using (StreamReader inputFile = new StreamReader(Path.Combine(filPathRead, "listofguesswords.txt")))
+                //string path = "C:/Users/overl/Desktop/people.csv";
+
+                lines = System.IO.File.ReadAllLines(Directory.GetCurrentDirectory() + "\\listofguesswords.txt");
+
+            }
+            catch (IOException e)
+
+            {
+                Console.WriteLine($"An error of reading the file 'listofguesswords.txt'. Error is:\n{e.Message}");
+                Console.ReadKey();
+            }
+
+            foreach (string line in lines)
+            {
+                listOfGuessWords = line.Split(',');
+            }
+            // --- End read in words from flie
 
             do
             {
 
                 GameTitleClear();
-
-                string[] lines = null;
-                string[] listOfGuessWords = null;
-                //bool restartGame = true; 
-
-                try
-                {
-                    //using (StreamReader inputFile = new StreamReader(Path.Combine(filPathRead, "listofguesswords.txt")))
-                    //string path = "C:/Users/overl/Desktop/people.csv";
-
-                    lines = System.IO.File.ReadAllLines(Directory.GetCurrentDirectory() + "\\listofguesswords.txt");
-
-                }
-                catch (IOException e)
-
-                {
-                    Console.WriteLine($"An error of reading the file 'listofguesswords.txt'. Error is:\n{e.Message}");
-                    Console.ReadKey();
-                }
-
-
-                foreach (string line in lines)
-                {
-                    listOfGuessWords = line.Split(',');
-                }
-
-                //string[] listOfGuessWords = new string[5] { "money", "car", "cat", "dog", "banana" };
 
                 // picking a random word from listOfGuessWords
                 Random rndWordPick = new Random();
@@ -87,15 +88,15 @@ namespace ConsoleAppAssignment2_Hangman
                     {
                         GameTitleClear();
 
-                        alertMessage = "You must type in something, can not be blank.\n";
-                        AlertMessageRed(alertMessage);
+                        alertText = "You must type in something, can not be blank.\n";
+                        AlertMessage(alertText, ConsoleColor.DarkRed);
                     }
                     else if (checkIFOnlyLetters == false)
                     {
                         GameTitleClear();
 
-                        alertMessage = "Your did not type in letter(s), please only type in letter(s): \n";
-                        AlertMessageRed(alertMessage);
+                        alertText = "Your did not type in letter(s), please only type in letter(s): \n";
+                        AlertMessage(alertText, ConsoleColor.DarkRed);
                     }
                     else if (userInput.Length == 1)
                     {
@@ -106,8 +107,8 @@ namespace ConsoleAppAssignment2_Hangman
 
                         if (allreadyGuessedBool == true)
                         {
-                            alertMessage = $"You have allready guessed letter: {userInput}.\nTry again (this guess does not count).";
-                            AlertMessageGreen(alertMessage);
+                            alertText = $"You have allready guessed letter: {userInput}.\nTry again (this guess does not count).";
+                            AlertMessage(alertText, ConsoleColor.DarkGreen);
                         }
 
                         char playerGuessLetter = char.Parse(userInput);
@@ -129,19 +130,19 @@ namespace ConsoleAppAssignment2_Hangman
                         // tell user if guessed letter is correct or not
                         if (userGuessedWrong == true && allreadyGuessedBool == false)
                         {
-                            alertMessage = $"Sorry! {userInput} does not exist in this word.\n";
-                            AlertMessageGreen(alertMessage);
+                            alertText = $"Sorry! {userInput} does not exist in this word.\n";
+                            AlertMessage(alertText, ConsoleColor.DarkGreen);
                             incorrectLetters.Append(userInput + ", ");
                             nrGuessesLeft--;
                         }
                         else if (userGuessedWrong == false && allreadyGuessedBool == false)
                         {
-                            alertMessage = $"Great! {userInput} IS in this word.\n";
-                            AlertMessageGreen(alertMessage);
+                            alertText = $"Great! {userInput} IS in this word.\n";
+                            AlertMessage(alertText, ConsoleColor.DarkGreen);
                             correctLetters = userInput.ToCharArray();
                             nrGuessesLeft--;
                         }
-
+                        
                         wordReveale = new string(displayWordToGuess); // wordReveale is used to check if user gotten the whole word
                         string strCorrectLetters = new string(correctLetters); // char array to string for output
                         guessedWordsString = incorrectLetters.ToString() + strCorrectLetters; // StringBuilder to string for output
@@ -165,8 +166,8 @@ namespace ConsoleAppAssignment2_Hangman
                         }
                         else
                         {
-                            alertMessage = $"Sorry! {userInput} is the wrong word!\n";
-                            AlertMessageGreen(alertMessage);
+                            alertText = $"Sorry! {userInput} is the wrong word!\n";
+                            AlertMessage(alertText, ConsoleColor.DarkGreen);
                         }
 
                         nrGuessesLeft--;
@@ -179,12 +180,12 @@ namespace ConsoleAppAssignment2_Hangman
                 if (nrGuessesLeft == 0)
                 {
                     GameTitleClear();
-                    alertMessage = $"\nYou lost. Sorry.\n";
-                    AlertMessageYellow(alertMessage);
+                    alertText = $"\nYou lost. Sorry.\n";
+                    AlertMessage(alertText, ConsoleColor.Yellow);
                 }
 
-                alertMessage = $"Do you want to play again? y/n (n will exit program): ";
-                AlertMessageYellow(alertMessage);
+                alertText = $"Do you want to play again? y/n (n will exit program): ";
+                AlertMessage(alertText, ConsoleColor.Yellow);
 
                 string playAgain = Console.ReadLine();
                 restartGame = WantToPlayAgain(playAgain);
@@ -221,8 +222,8 @@ namespace ConsoleAppAssignment2_Hangman
                 }
                 else
                 {
-                    alertMessage = "You did not type y or n!";
-                    AlertMessageRed(alertMessage);
+                    string alertText = "You did not type y or n!";
+                    AlertMessage(alertText, ConsoleColor.DarkRed);
                     yesOrNo = false;
                     return true;
                 }
@@ -231,34 +232,23 @@ namespace ConsoleAppAssignment2_Hangman
 
         }
 
-        public static void AlertMessageRed(string alertMessage)
+        
+        public static void AlertMessage(string alertText, ConsoleColor alertMessColor)
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(alertMessage);
-            Console.ResetColor();
-        }
-
-        public static void AlertMessageGreen(string alertMessage)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.WriteLine(alertMessage);
-            Console.ResetColor();
-        }
-
-        public static void AlertMessageYellow(string alertMessage)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(alertMessage);
+            Console.ForegroundColor = alertMessColor;
+            Console.WriteLine(alertText);
             Console.ResetColor();
         }
 
 
         public static void YourAWinner(string wordToGuess, int nrGuessesLeft)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            //Console.ForegroundColor = ConsoleColor.Yellow;
             GameTitleClear();
-            Console.WriteLine($"!!!! Congratulations! {wordToGuess} is the correct word! You won! !!!!\n");
-            Console.WriteLine($"You had {nrGuessesLeft} guesses left.\n\nWell Done!\n\n");
+            //Console.WriteLine($"!!!! Congratulations! {wordToGuess} is the correct word! You won! !!!!\n");
+            //Console.WriteLine($"You had {nrGuessesLeft} guesses left.\n\nWell Done!\n\n");
+            string alertText = $"!!!! Congratulations! { wordToGuess} is the correct word! You won!!!!!\nYou had {nrGuessesLeft} guesses left.\n\nWell Done!\n\n";
+            AlertMessage(alertText, ConsoleColor.Yellow);
             Console.ResetColor();
 
         }
