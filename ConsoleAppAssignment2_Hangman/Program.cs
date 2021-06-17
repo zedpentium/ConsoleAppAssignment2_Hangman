@@ -54,7 +54,7 @@ namespace ConsoleAppAssignment2_Hangman
 
             string userInput = null;
             string guessedWordsString = null;
-            string guessedCorrectLetter = null;
+            //string guessedCorrectLetter = null;
             string alertMessage = "";
 
             bool rightInput = true;
